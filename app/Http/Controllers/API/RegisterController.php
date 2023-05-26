@@ -234,32 +234,61 @@ class RegisterController extends BaseController
     }
 
     public function addQuestions(Request $request){
-        $validator = Validator::make($request->all(), [
-            'quiz_id' => 'required',
-            'question' => 'required',
-            'answer' => 'required',
-            'input_type' => 'required',
-        ]); 
-
-        if($validator->fails()){
-            return $this->sendError('Validation Error.', $validator->errors());       
-        } 
-
-        $data = [
-            'quiz_id' => $request->quiz_id,
-            'question' => $request->question,
-            'answer' => $request->answer,
-            'input_type' => $request->input_type
-        ];
-        $success = Question::create($data);
-        if($success){
-            $answersdata = [
-                'question_id' => $success->id,
-                'answer' => $request->answervalue,
-                'score' => $request->answerscore,
+       // print_r($request->data);die;
+        foreach($request->data as $val){
+            $data = [
+                'quiz_id' => $request['quiz_id'],
+                'question' => $val['title'],
+                'answer' => $val['sampleAnswer'],
+                'input_type' => $val['type']
             ];
-          $result = Answer::create($answersdata);  
+            $success = Question::create($data);
+         if($success){
+            foreach ($val['options'] as $option) {
+                $answersdata = [
+                    'question_id' => $success->id,
+                    'answer' => $option['title'],
+                    'score' => $option['score'],
+                ];
+              $result = Answer::create($answersdata);     
+                
+            }    
+        }
         }
         return $this->sendResponse($success, 'Question submitted successfully.');
+    }
+
+    public function shareQuiz(Request $request,$id){
+        $quiz = Quiz::where('id', $id)->first();
+        
+        $quiz_questions = Question::where('quiz_id', $quiz->id)->get()->toArray();
+        $questioncount = count($quiz_questions);
+
+        $questiondata = [
+            'quiz_id' => $quiz->id,
+            'quiz_name' => $quiz->quiz_name, 
+            'question_count' => $questioncount,  
+        ];
+         
+        $result = [$questiondata]; 
+        foreach ($quiz_questions as $val) {
+            $answer_details = Answer::where('question_id', $val['id'])->get()->toArray();
+            $question_details = [
+                'question_id' => $val['id'],
+                'quiz_id' => $val['quiz_id'],
+                'question_title' => $val['question'],
+                'sample_answer' => $val['answer'],
+                'input_type' => $val['input_type'],
+                'answer_details' => $answer_details,
+            ];
+        
+            foreach ($result as &$item) {
+                if ($item['quiz_id'] === $question_details['quiz_id']) {
+                    $item['question_details'][] = $question_details;
+                }
+            }
+        }
+      //  print_r($result);die;
+        return $this->sendResponse($result, 'Quiz question fetched successfully.');
     }
 }
