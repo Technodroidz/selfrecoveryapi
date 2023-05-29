@@ -22,6 +22,7 @@ Route::post('update-quiz', [RegisterController::class, 'updateQuiz']);
 Route::post('delete-quiz', [RegisterController::class, 'deleteQuiz']);
 Route::get('fetch-all-quiz', [RegisterController::class, 'fetchQuiz']);
 Route::get('fetch-all-users', [RegisterController::class, 'fetchAllUsers']);
+Route::post('user-access', [RegisterController::class, 'userAccess']);
 
 
 //#user routes

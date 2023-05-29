@@ -211,7 +211,7 @@ class RegisterController extends BaseController
        // $success = User::orderBy('id','desc')->get()->toArray();
         $success = DB::table('users')
             ->select('users.*', DB::raw('COUNT(quizzes.user_id) AS quiz_count'))
-            ->join('quizzes', 'quizzes.user_id', '=', 'users.id')
+            ->leftjoin('quizzes', 'quizzes.user_id', '=', 'users.id')
             ->groupBy('users.id')
             ->get()->toArray();
         return $this->sendResponse($success, 'Users and their total quiz fetched successfully.');
@@ -290,5 +290,14 @@ class RegisterController extends BaseController
         }
       //  print_r($result);die;
         return $this->sendResponse($result, 'Quiz question fetched successfully.');
+    }
+
+    public function userAccess(Request $request){
+        $userid = $request->userid;
+        $access = [
+          'access_level' =>  $request->access,
+        ];
+        $res = User::where('id', $userid)->update($access);
+        return $this->sendResponse($res, 'Users access updated successfully.');
     }
 }
