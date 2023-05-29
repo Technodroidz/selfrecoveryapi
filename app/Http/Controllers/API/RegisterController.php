@@ -203,7 +203,7 @@ class RegisterController extends BaseController
         if($validator->fails()){
             return $this->sendError('Validation Error.', $validator->errors());       
         }
-        $success = Quiz::where('user_id', $request->user_id)->orderBy('id','desc')->get()->toArray();
+        $success = Quiz::where('user_id', $request->user_id)->where('status', '1')->orderBy('id','desc')->get()->toArray();
         return $this->sendResponse($success, 'Users quiz fetched successfully.');
     }
 
