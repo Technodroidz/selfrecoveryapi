@@ -23,6 +23,8 @@ Route::post('delete-quiz', [RegisterController::class, 'deleteQuiz']);
 Route::get('fetch-all-quiz', [RegisterController::class, 'fetchQuiz']);
 Route::get('fetch-all-users', [RegisterController::class, 'fetchAllUsers']);
 Route::post('user-access', [RegisterController::class, 'userAccess']);
+Route::post('user-api-access', [RegisterController::class, 'userApiAccess']);
+Route::post('fetch-quiz-title', [RegisterController::class, 'fetchQuizTitle']);
 
 
 //#user routes

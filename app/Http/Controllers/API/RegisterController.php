@@ -12,6 +12,7 @@ use App\Models\Quiz;
 use App\Models\Query;
 use App\Models\Question;
 use App\Models\Answer;
+use App\Models\UserApiAccess;
 
 
 
@@ -134,9 +135,9 @@ class RegisterController extends BaseController
     }
 
     public function fetchQuiz(Request $request){
-       // $where = ['status' => '1'];
+        $where = ['status' => '1'];
        // $success = Quiz::where($where)->get()->toArray();
-        $success = Quiz::orderBy('id','desc')->get()->toArray();
+        $success = Quiz::where($where)->orderBy('id','desc')->get()->toArray();
         return $this->sendResponse($success, 'Quiz fetched successfully.');
     }
 
@@ -299,5 +300,24 @@ class RegisterController extends BaseController
         ];
         $res = User::where('id', $userid)->update($access);
         return $this->sendResponse($res, 'Users access updated successfully.');
+    }
+
+    public function userApiAccess(Request $request){
+        $userid = $request->user_id;
+        $data = [
+          'user_id' =>  $userid,
+          'api_request' =>  '1',
+        ];
+        $res = UserApiAccess::create($data);
+        return $this->sendResponse($res, 'Api access requested successfully.');  
+    }
+
+    public function fetchQuizTitle(Request $request){
+        $res = Quiz::where('id', $request->quiz_id)->get()->toArray();
+        //print_r($res[0]['quiz_name']);
+        $result = [
+            'quiz_title' => $res[0]['quiz_name']
+        ];
+        return $this->sendResponse($result, 'Quiz title fetched successfully.'); 
     }
 }

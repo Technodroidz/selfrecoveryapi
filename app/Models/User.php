@@ -28,6 +28,7 @@ class User extends Authenticatable
         'address',
         'description',
         'access_level',
+        'api_access',
         'subscription_type',
         'subscription_amount',
         'subscription_date',
