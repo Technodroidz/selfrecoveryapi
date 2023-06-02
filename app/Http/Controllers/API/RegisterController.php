@@ -13,6 +13,7 @@ use App\Models\Query;
 use App\Models\Question;
 use App\Models\Answer;
 use App\Models\UserApiAccess;
+use App\Models\ApiDetail;
 
 
 
@@ -307,9 +308,16 @@ class RegisterController extends BaseController
         $data = [
           'user_id' =>  $userid,
           'api_request' =>  '1',
+          'status' => '1',
         ];
         $res = UserApiAccess::create($data);
-        return $this->sendResponse($res, 'Api access requested successfully.');  
+        if($res){
+            $update = [
+                'api_access' => '1'
+            ];
+           $result = User::where('id',$userid)->update($update); 
+        }
+        return $this->sendResponse($res, 'Api access request successfull. Please check the Api Access section in My Profile.');  
     }
 
     public function fetchQuizTitle(Request $request){
@@ -319,5 +327,39 @@ class RegisterController extends BaseController
             'quiz_title' => $res[0]['quiz_name']
         ];
         return $this->sendResponse($result, 'Quiz title fetched successfully.'); 
+    }
+
+    public function userProfile(Request $request){
+        $res = user::where('id', $request->user_id)->get()->toArray();
+       
+        return $this->sendResponse($res, 'user profile fetched successfully.');  
+    }
+
+    public function userApiDetails(Request $request){
+        $res = user::where('id', $request->user_id)->first(); 
+       
+        if($res->api_access == '1'){
+            $success = ApiDetail::orderBy('id', 'asc')->get()->toArray();
+            return $this->sendResponse($success, 'Api details fetched successfully.');  
+        }else{
+            $success = null;
+            return $this->sendResponse($success, 'You have no api access.');   
+        }
+    }
+
+    public function changePassword(Request $request){
+        $res = User::where('id',$request->user_id)->first();
+        if($request->old_password == $res->password){
+            $data = [
+                'password' => $request->new_password
+            ];
+    
+            $result = User::where('id',$request->user_id)->update($data); 
+            return $this->sendResponse($result, 'You have successfully updated your password.'); 
+        }else{
+            $result = null;
+            return $this->sendResponse($result,'Current password is wrong');  
+        }
+         
     }
 }
