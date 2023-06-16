@@ -14,6 +14,8 @@ use App\Models\Question;
 use App\Models\Answer;
 use App\Models\UserApiAccess;
 use App\Models\ApiDetail;
+use App\Models\QuizDesign;
+use App\Models\Possibility;
 
 
 
@@ -361,5 +363,47 @@ class RegisterController extends BaseController
             return $this->sendResponse($result,'Current password is wrong');  
         }
          
+    }
+
+    public function submitQuizDesign(Request $request){
+        $userid = $request->user_id;
+        $dataarray = $request->dataarray;
+        
+            $data = [
+                'user_id' => $userid,
+                'quiz_id' => $dataarray['quizid'],
+                'title_font' => $dataarray['titlefont'],
+                'main_font' => $dataarray['mainfont']
+            ];
+        
+        $res = QuizDesign::create($data); 
+        return $this->sendResponse($res, 'Quiz design saved successfully.');    
+        
+    }
+
+    public function addPossibilities(Request $request){
+        // print_r($request->data);die;
+         foreach($request->data as $val){
+            $data = [
+                'possibility' => $val['Possibilitytitle'],
+                'description' => $val['Description'],
+                'weblink' => $val['WebLink'],
+                'assigned_quiz' => $val['AssignedQuizzes'],
+                'active_inactive' => $val['ActiveOrInactive']
+            ];
+            $success = Possibility::create($data);
+         if($success){
+            foreach ($val['options'] as $option) {
+                $answersdata = [
+                    'possibility_id' => $success->id,
+                    'answer' => $option['title'],
+                    'score' => $option['score'],
+                ];
+              $result = Answer::create($answersdata);     
+                
+            }    
+        }
+        }
+        return $this->sendResponse($success, 'Possibilities submitted successfully.');
     }
 }

@@ -36,6 +36,8 @@ Route::get('share-quiz/{id}', [RegisterController::class, 'shareQuiz']);
 Route::post('user-profile', [RegisterController::class, 'userProfile']);
 Route::post('fetch-user-api-details', [RegisterController::class, 'userApiDetails']);
 Route::post('change-password', [RegisterController::class, 'changePassword']);
+Route::post('submit-quiz-design', [RegisterController::class, 'submitQuizDesign']);
+Route::post('add-possibilities', [RegisterController::class, 'addPossibilities']);
 
 //#common routes
 Route::post('submit-query', [RegisterController::class, 'submitQuery']);
